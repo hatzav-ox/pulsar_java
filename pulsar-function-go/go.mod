@@ -9,8 +9,8 @@ require (
 	github.com/prometheus/client_model v0.2.0
 	github.com/sirupsen/logrus v1.6.0
 	github.com/stretchr/testify v1.7.0
-	google.golang.org/grpc v1.38.0
-	google.golang.org/protobuf v1.26.0
+	google.golang.org/grpc v1.62.1
+	google.golang.org/protobuf v1.32.0
 	gopkg.in/yaml.v2 v2.4.0
 )
 
