@@ -17,6 +17,61 @@
 # under the License.
 #
 
+resource "aws_flow_log" "aws_vpc_flowlogs" {
+  iam_role_arn    = aws_iam_role.vpc_flowlogs_role.arn
+  log_destination = aws_cloudwatch_log_group.cloudwatch_flowlogs_vpc.arn
+  traffic_type    = "ALL"
+  vpc_id          = aws_vpc.pulsar_vpc.id
+}
+
+resource "aws_cloudwatch_log_group" "cloudwatch_flowlogs_vpc" {
+  name = "cloudwatch_flowlogs_vpc"
+}
+
+resource "aws_iam_role" "vpc_flowlogs_role" {
+  name = "vpc_flowlogs_role"
+
+  assume_role_policy = <<EOF
+{
+  "Version": "2012-10-17",
+  "Statement": [
+    {
+      "Sid": "",
+      "Effect": "Allow",
+      "Principal": {
+        "Service": "vpc-flow-logs.amazonaws.com"
+      },
+      "Action": "sts:AssumeRole"
+    }
+  ]
+}
+EOF
+}
+
+resource "aws_iam_role_policy" "vpc_flowlogs_role_policy" {
+  name = "vpc_flowlogs_role_policy"
+  role = aws_iam_role.vpc_flowlogs_role.id
+
+  policy = <<EOF
+{
+  "Version": "2012-10-17",
+  "Statement": [
+    {
+      "Action": [
+        "logs:CreateLogGroup",
+        "logs:CreateLogStream",
+        "logs:PutLogEvents",
+        "logs:DescribeLogGroups",
+        "logs:DescribeLogStreams"
+      ],
+      "Effect": "Allow",
+      "Resource": "*"
+    }
+  ]
+}
+EOF
+}
+
 resource "aws_vpc" "pulsar_vpc" {
   cidr_block           = var.base_cidr_block
   enable_dns_support   = true
